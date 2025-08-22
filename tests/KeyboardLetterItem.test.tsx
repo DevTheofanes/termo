@@ -1,8 +1,14 @@
-import { test, expect } from 'vitest';
+import { test, expect, vi } from 'vitest';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
+import { act } from 'react-dom/test-utils';
+import { createRoot } from 'react-dom/client';
 import { KeyboardLetterItem } from '../src/components/KeyboardLetter';
-import { styleLetterKeyBoardStrong, styleLetterKeyBoardSuccess } from '../styles';
+import {
+  styleLetterKeyBoardStrong,
+  styleLetterKeyBoardSuccess,
+  styleLetterKeyBoardAlmost,
+} from '../styles';
 import { LetterClassification } from '../src/models';
 
 test('disables strong letters and applies strong style', () => {
@@ -27,4 +33,49 @@ test('applies success style for correct letters', () => {
   );
   expect(html).not.toContain('disabled=""');
   expect(html).toContain(`background-color:${styleLetterKeyBoardSuccess.backgroundColor}`);
+});
+
+test('applies almost style for almost letters', () => {
+  const html = renderToStaticMarkup(
+    <KeyboardLetterItem
+      letter="C"
+      validedLetterOfKeyboard={() => LetterClassification.almost}
+      onHandleClick={() => {}}
+    />
+  );
+  expect(html).toContain(`background-color:${styleLetterKeyBoardAlmost.backgroundColor}`);
+});
+
+test('renders default style for unknown letters', () => {
+  const html = renderToStaticMarkup(
+    <KeyboardLetterItem
+      letter="D"
+      validedLetterOfKeyboard={() => LetterClassification.unknown}
+      onHandleClick={() => {}}
+    />
+  );
+  expect(html).toContain('style=""');
+});
+
+test('calls onHandleClick when button is pressed', () => {
+  const onHandleClick = vi.fn();
+  const container = document.createElement('div');
+
+  act(() => {
+    createRoot(container).render(
+      <KeyboardLetterItem
+        letter="E"
+        validedLetterOfKeyboard={() => LetterClassification.unknown}
+        onHandleClick={onHandleClick}
+      />
+    );
+  });
+
+  const button = container.querySelector('button') as HTMLButtonElement;
+
+  act(() => {
+    button.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+  });
+
+  expect(onHandleClick).toHaveBeenCalledWith('E');
 });
