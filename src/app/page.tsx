@@ -99,22 +99,18 @@ export default function Home() {
     }
   };
 
-  const validateLetter = (letter: string, index: number, inputWord: string): LetterClassification => {
+  const validateLetter = (letter: string, index: number): LetterClassification => {
     const upperLetter = letter.toUpperCase();
     const correctLetters = correctWord.toUpperCase().split('');
 
     if (correctLetters[index] === upperLetter) return LetterClassification.correct;
-    if (!correctLetters.includes(upperLetter)) return LetterClassification.strong;
+    if (correctLetters.includes(upperLetter)) return LetterClassification.almost;
 
-    const occurrences = correctLetters.filter((l) => l === upperLetter).length;
-    const samePosition = inputWord[index]?.toUpperCase() === upperLetter;
-    return occurrences === 1 && samePosition
-      ? LetterClassification.strong
-      : LetterClassification.almost;
+    return LetterClassification.strong;
   };
 
-  const validateLetterOfWord = (letter: string, index: number, inputWord: string): React.CSSProperties => {
-    const letterClassification = validateLetter(letter, index, inputWord);
+  const validateLetterOfWord = (letter: string, index: number): React.CSSProperties => {
+    const letterClassification = validateLetter(letter, index);
 
     if (letterClassification === LetterClassification.correct) return styleLetterSuccess;
     if (letterClassification === LetterClassification.almost) return styleLetterAlmost;
@@ -130,7 +126,7 @@ export default function Home() {
         const iterator = l[index];
 
         if (letter === iterator) {
-          letterClassification = validateLetter(letter, index, '');
+          letterClassification = validateLetter(letter, index);
         }
       }
     }
@@ -157,12 +153,12 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center">
       <Title>TERMO</Title>
       <Message>{message}</Message>
-      {words.map(w => (
-        <Word key={w}>{w.split('').map((letter, index) => {
-          const letterStyle = validateLetterOfWord(letter, index, w)
-          return (<Letter key={`${letter}-${index}`} style={letterStyle}>{letter}</Letter>)
-        })}</Word>
-      ))}
+        {words.map(w => (
+          <Word key={w}>{w.split('').map((letter, index) => {
+            const letterStyle = validateLetterOfWord(letter, index)
+            return (<Letter key={`${letter}-${index}`} style={letterStyle}>{letter}</Letter>)
+          })}</Word>
+        ))}
 
       <InputContainer>
         {inputValue.map((value, index) => (
