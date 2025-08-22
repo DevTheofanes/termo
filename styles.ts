@@ -6,11 +6,17 @@ export const Title = styled.h1`
   color: #FFF;
   margin-top: 20px;
   font-weight: bold;
+  @media (max-width: 480px) {
+    font-size: 1.5em;
+  }
 `;
 
 export const InputContainer = styled.div`
     display: flex;
     margin: 20px 0;
+    @media (max-width: 480px) {
+      margin: 12px 0;
+    }
 `;
 
 export const InputButton = styled.button`
@@ -22,6 +28,12 @@ background-color: #3A7FA3;
     margin-left: 12px;
     font-weight: bold;
     font-size: 14px;
+    @media (max-width: 480px) {
+      width: 80px;
+      height: 40px;
+      font-size: 12px;
+      margin-left: 8px;
+    }
 `
 
 export const Input = styled.input`
@@ -35,6 +47,9 @@ display: grid;
 grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
 gap: 8px;
 margin-bottom: 8px;
+  @media (max-width: 480px) {
+    gap: 4px;
+  }
 `;
 
 export const Letter = styled.p`
@@ -44,6 +59,11 @@ export const Letter = styled.p`
     display: flex;
     align-items: center;
     justify-content: center;
+    @media (max-width: 480px) {
+      width: 40px;
+      height: 40px;
+      font-size: 0.875rem;
+    }
 `
 
 export const styleLetterStrong: React.CSSProperties = {
@@ -75,6 +95,12 @@ export const StyledInput = styled.input`
   font-size: 16px;
   border: 1px solid #ccc;
   color: #222;
+  @media (max-width: 480px) {
+    width: 40px;
+    height: 40px;
+    margin: 3px;
+    font-size: 14px;
+  }
 `;
 
 export const KeyboardContainer = styled.div`
@@ -97,6 +123,12 @@ export const KeyboardLetter = styled.button`
     margin: 6px;
     font-weight: bold;
     color: #fff;
+    @media (max-width: 480px) {
+      width: 32px;
+      height: 32px;
+      margin: 2px;
+      font-size: 12px;
+    }
 `;
 
 export const styleLetterKeyBoardStrong: React.CSSProperties = {
