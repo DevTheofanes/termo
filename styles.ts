@@ -104,7 +104,8 @@ export const StyledInput = styled.input`
 `;
 
 export const KeyboardContainer = styled.div`
-
+  width: 100%;
+  overflow-x: hidden;
 `;
 
 export const KeyboardLine = styled.div`
@@ -124,7 +125,7 @@ export const KeyboardLetter = styled.button`
     font-weight: bold;
     color: #fff;
     @media (max-width: 480px) {
-      width: 32px;
+      width: 26px;
       height: 32px;
       margin: 2px;
       font-size: 12px;
