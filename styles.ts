@@ -115,5 +115,4 @@ export const styleLetterKeyBoardSuccess: React.CSSProperties = {
     border: 0,
 }
 
-export const styleLetterKeyBoardUnknown: React.CSSProperties = {
-}
+export const styleLetterKeyBoardUnknown: React.CSSProperties = {}

@@ -1,25 +1,45 @@
 'use client'
 import React, { useState, useEffect, useRef } from 'react';
-import { InputButton, InputContainer, KeyboardContainer, KeyboardLetter, KeyboardLine, Letter, Message, StyledInput, Title, Word, styleLetterAlmost, styleLetterKeyBoardAlmost, styleLetterKeyBoardStrong, styleLetterKeyBoardSuccess, styleLetterKeyBoardUnknown, styleLetterStrong, styleLetterSuccess, } from '../../styles'
+import {
+  InputButton,
+  InputContainer,
+  KeyboardContainer,
+  KeyboardLine,
+  Letter,
+  Message,
+  StyledInput,
+  Title,
+  Word,
+  styleLetterAlmost,
+  styleLetterKeyBoardAlmost,
+  styleLetterKeyBoardStrong,
+  styleLetterKeyBoardSuccess,
+  styleLetterKeyBoardUnknown,
+  styleLetterStrong,
+  styleLetterSuccess,
+} from '../../styles';
 import palavras from './palavras.json'
 import { KeyboardLetterItem } from '@/components/KeyboardLetter';
 import { LetterClassification } from '@/models';
 
 export default function Home() {
   const [correctWord, setCorrectWord] = useState('');
-  const [word, setWord] = useState('');
   const [words, setWords] = useState<string[]>([]);
   const [message, setMessage] = useState('');
-  const [inputValue, setInputValue] = useState(['', '', '', '', '']);
-  const inputRefs: any = [useRef(), useRef(), useRef(), useRef(), useRef()];
-    const [focusIndex, setFocusIndex] = useState(-1);
+  const [inputValue, setInputValue] = useState<string[]>(Array(5).fill(''));
+  const inputRefs: React.RefObject<HTMLInputElement>[] = [
+    useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null),
+  ];
+  const [focusIndex, setFocusIndex] = useState(-1);
 
   const handleInputWordSubmit = () => {
-    let text = ''
-    inputValue.forEach(i => text += i)
+    const text = inputValue.join('');
     setMessage('')
     setFocusIndex(0)
-    setWord(text)
 
     if (words.length === 6) {
       setMessage(`Que pena, vc perdeu! a palavra era ${correctWord.toUpperCase()}`)
@@ -34,9 +54,8 @@ export default function Home() {
       }
 
       setWords([...words, text])
-      setWord('')
-      setInputValue(['', '', '', '', ''])
-      inputRefs[0].current.focus()
+      setInputValue(Array(5).fill(''))
+      inputRefs[0].current?.focus()
 
       if (text === correctWord) {
         setMessage('Parabens vc arrebentou')
@@ -45,7 +64,7 @@ export default function Home() {
     }
     const indexWithoutValue = inputValue.findIndex(i => !i)
     setFocusIndex(indexWithoutValue)
-    inputRefs[indexWithoutValue].current.focus()
+    inputRefs[indexWithoutValue].current?.focus()
   };
 
   useEffect(() => {
@@ -59,76 +78,65 @@ export default function Home() {
     setInputValue(newInputValue);
 
     if (value && index < inputRefs.length - 1) {
-      inputRefs[index + 1].current.focus();
-      setFocusIndex(index + 1)
-      return
+      inputRefs[index + 1].current?.focus();
+      setFocusIndex(index + 1);
+      return;
     }
 
-    const indexWithoutValue = inputValue.findIndex(i => !i)
-    setFocusIndex(indexWithoutValue)
-    inputRefs?.[indexWithoutValue]?.current.focus()
+    const indexWithoutValue = inputValue.findIndex(i => !i);
+    setFocusIndex(indexWithoutValue);
+    inputRefs[indexWithoutValue]?.current?.focus();
   };
 
-  const handleKeyDown = (index: number, event: any) => {
+  const handleKeyDown = (index: number, event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Backspace' && index > 0 && !inputValue[index]) {
       // Se pressionar "Backspace" e o campo atual estiver vazio, move o foco para o campo anterior
-      inputRefs[index - 1].current.focus();
-      setFocusIndex(index - 1)
+      inputRefs[index - 1].current?.focus();
+      setFocusIndex(index - 1);
     }
     if (event.key === 'Enter') {
-      handleInputWordSubmit()
+      handleInputWordSubmit();
     }
   };
 
-  const validedLetter = (letter: string, index: number, inputWord: string): LetterClassification => {
-    const correctLetters = correctWord.split('')
-    if (correctLetters[index].toUpperCase() === letter.toUpperCase()) {
-      return LetterClassification.correct
-    }
+  const validateLetter = (letter: string, index: number, inputWord: string): LetterClassification => {
+    const upperLetter = letter.toUpperCase();
+    const correctLetters = correctWord.toUpperCase().split('');
 
-    const lettersWithExistsInWord = correctLetters.filter(l => l.toUpperCase() === letter.toUpperCase())
-    if (lettersWithExistsInWord.length) {
-      for (let index = 0; index < correctLetters.length; index++) {
-        const iterator = correctLetters[index];
+    if (correctLetters[index] === upperLetter) return LetterClassification.correct;
+    if (!correctLetters.includes(upperLetter)) return LetterClassification.strong;
 
-        if(iterator === letter) {
-          if(lettersWithExistsInWord.length === 1 && inputWord[index] === iterator) {
-            console.log({lettersWithExistsInWord, inputWord : inputWord[index], iterator})
-            return LetterClassification.strong
-          }
-        }
-      }
-      return LetterClassification.almost
-    }
+    const occurrences = correctLetters.filter((l) => l === upperLetter).length;
+    const samePosition = inputWord[index]?.toUpperCase() === upperLetter;
+    return occurrences === 1 && samePosition
+      ? LetterClassification.strong
+      : LetterClassification.almost;
+  };
 
-    return LetterClassification.strong
-  }
+  const validateLetterOfWord = (letter: string, index: number, inputWord: string): React.CSSProperties => {
+    const letterClassification = validateLetter(letter, index, inputWord);
 
-  const validedLetterOfWord = (letter: string, index: number, inputWord: string): React.CSSProperties => {
-    const letterClassification = validedLetter(letter, index, inputWord)
+    if (letterClassification === LetterClassification.correct) return styleLetterSuccess;
+    if (letterClassification === LetterClassification.almost) return styleLetterAlmost;
 
-    if (letterClassification === LetterClassification.correct) return styleLetterSuccess
+    return styleLetterStrong;
+  };
 
-    if (letterClassification === LetterClassification.almost) return styleLetterAlmost
-
-    return styleLetterStrong
-  }
-
-  const validedLetterOfKeboard = (letter: string): LetterClassification => {
-    let letterClassification = LetterClassification.unknown
+  const validateLetterOfKeyboard = (letter: string): LetterClassification => {
+    let letterClassification = LetterClassification.unknown;
     for (const w of words) {
-      const l = w.split('')
+      const l = w.split('');
       for (let index = 0; index < l.length; index++) {
         const iterator = l[index];
 
         if (letter === iterator) {
-          letterClassification = validedLetter(letter, index, '')
+          letterClassification = validateLetter(letter, index, '');
         }
       }
     }
 
-    return letterClassification
-  }
+    return letterClassification;
+  };
 
   const firstLine = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p']
   const secondLine = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l']
@@ -151,7 +159,7 @@ export default function Home() {
       <Message>{message}</Message>
       {words.map(w => (
         <Word key={w}>{w.split('').map((letter, index) => {
-          const letterStyle = validedLetterOfWord(letter, index, w)
+          const letterStyle = validateLetterOfWord(letter, index, w)
           return (<Letter key={`${letter}-${index}`} style={letterStyle}>{letter}</Letter>)
         })}</Word>
       ))}
@@ -164,7 +172,7 @@ export default function Home() {
             maxLength={1}
             value={value}
             onClick={() => setFocusIndex(index)}
-            onChange={(e: any) => handleChange(index, e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(index, e.target.value)}
             ref={inputRefs[index]}
             onKeyDown={(e) => handleKeyDown(index, e)}
           />
@@ -173,13 +181,13 @@ export default function Home() {
 
       <KeyboardContainer>
         <KeyboardLine>
-          {firstLine.map(k => (<KeyboardLetterItem key={k} onHandleClick={onClickLetterKeyboard} letter={k} validedLetterOfKeyboard={validedLetterOfKeboard} />))}
+          {firstLine.map(k => (<KeyboardLetterItem key={k} onHandleClick={onClickLetterKeyboard} letter={k} validedLetterOfKeyboard={validateLetterOfKeyboard} />))}
         </KeyboardLine>
         <KeyboardLine>
-        {secondLine.map(k => (<KeyboardLetterItem key={k} onHandleClick={onClickLetterKeyboard} letter={k} validedLetterOfKeyboard={validedLetterOfKeboard} />))}
+        {secondLine.map(k => (<KeyboardLetterItem key={k} onHandleClick={onClickLetterKeyboard} letter={k} validedLetterOfKeyboard={validateLetterOfKeyboard} />))}
         </KeyboardLine>
         <KeyboardLine>
-        {thirdLine.map(k => (<KeyboardLetterItem key={k} onHandleClick={onClickLetterKeyboard} letter={k} validedLetterOfKeyboard={validedLetterOfKeboard} />))}
+        {thirdLine.map(k => (<KeyboardLetterItem key={k} onHandleClick={onClickLetterKeyboard} letter={k} validedLetterOfKeyboard={validateLetterOfKeyboard} />))}
           <InputButton onClick={handleInputWordSubmit}>ENTER</InputButton>
         </KeyboardLine>
       </KeyboardContainer>
