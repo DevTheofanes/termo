@@ -20,5 +20,20 @@ export function KeyboardLetterItem({letter, validedLetterOfKeyboard, onHandleCli
         return styleLetterKeyBoardUnknown
       }
 
-  return <KeyboardLetter disabled={validedLetterOfKeyboard(letter) === LetterClassification.strong} onClick={() => onHandleClick(letter)} style={validedLetterOfKeboardStyle(letter)}>{letter}</KeyboardLetter>
+  const handlePress = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    onHandleClick(letter);
+  };
+
+  return (
+    <KeyboardLetter
+      type="button"
+      disabled={validedLetterOfKeyboard(letter) === LetterClassification.strong}
+      onClick={handlePress}
+      onTouchStart={handlePress}
+      style={validedLetterOfKeboardStyle(letter)}
+    >
+      {letter}
+    </KeyboardLetter>
+  );
 }
