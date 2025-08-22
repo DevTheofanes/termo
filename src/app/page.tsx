@@ -83,7 +83,7 @@ export default function Home() {
       return;
     }
 
-    const indexWithoutValue = inputValue.findIndex(i => !i);
+    const indexWithoutValue = newInputValue.findIndex(i => !i);
     setFocusIndex(indexWithoutValue);
     inputRefs[indexWithoutValue]?.current?.focus();
   };
@@ -188,7 +188,16 @@ export default function Home() {
         </KeyboardLine>
         <KeyboardLine>
         {thirdLine.map(k => (<KeyboardLetterItem key={k} onHandleClick={onClickLetterKeyboard} letter={k} validedLetterOfKeyboard={validateLetterOfKeyboard} />))}
-          <InputButton onClick={handleInputWordSubmit}>ENTER</InputButton>
+          <InputButton
+            type="button"
+            onClick={handleInputWordSubmit}
+            onTouchStart={(e) => {
+              e.preventDefault();
+              handleInputWordSubmit();
+            }}
+          >
+            ENTER
+          </InputButton>
         </KeyboardLine>
       </KeyboardContainer>
 
