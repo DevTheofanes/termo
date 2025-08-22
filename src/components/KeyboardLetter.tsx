@@ -1,7 +1,7 @@
 'use client'
 import React from 'react';
 import { KeyboardLetter, styleLetterKeyBoardAlmost, styleLetterKeyBoardStrong, styleLetterKeyBoardSuccess, styleLetterKeyBoardUnknown } from '../../styles';
-import { LetterClassification } from '@/models';
+import { LetterClassification } from '../models';
 
 export function KeyboardLetterItem({letter, validedLetterOfKeyboard, onHandleClick}: {
     letter: string
