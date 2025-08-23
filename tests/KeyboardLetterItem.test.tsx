@@ -4,11 +4,6 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { act } from 'react-dom/test-utils';
 import { createRoot } from 'react-dom/client';
 import { KeyboardLetterItem } from '../src/components/KeyboardLetter';
-import {
-  styleLetterKeyBoardStrong,
-  styleLetterKeyBoardSuccess,
-  styleLetterKeyBoardAlmost,
-} from '../styles';
 import { LetterClassification } from '../src/models';
 
 test('disables strong letters and applies strong style', () => {
@@ -20,7 +15,7 @@ test('disables strong letters and applies strong style', () => {
     />
   );
   expect(html).toMatch(/disabled=""/);
-  expect(html).toContain(`opacity:${styleLetterKeyBoardStrong.opacity}`);
+  expect(html).toContain('opacity-50');
 });
 
 test('applies success style for correct letters', () => {
@@ -32,7 +27,7 @@ test('applies success style for correct letters', () => {
     />
   );
   expect(html).not.toContain('disabled=""');
-  expect(html).toContain(`background-color:${styleLetterKeyBoardSuccess.backgroundColor}`);
+  expect(html).toContain('bg-success');
 });
 
 test('applies almost style for almost letters', () => {
@@ -43,7 +38,7 @@ test('applies almost style for almost letters', () => {
       onHandleClick={() => {}}
     />
   );
-  expect(html).toContain(`background-color:${styleLetterKeyBoardAlmost.backgroundColor}`);
+  expect(html).toContain('bg-almost');
 });
 
 test('renders default style for unknown letters', () => {
@@ -54,7 +49,7 @@ test('renders default style for unknown letters', () => {
       onHandleClick={() => {}}
     />
   );
-  expect(html).toContain('style=""');
+  expect(html).toContain('bg-key');
 });
 
 test('calls onHandleClick when button is pressed', () => {

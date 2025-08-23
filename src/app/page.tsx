@@ -1,43 +1,25 @@
 'use client'
-import React, { useState, useEffect, useRef } from 'react';
-import {
-  InputButton,
-  InputContainer,
-  KeyboardContainer,
-  KeyboardLine,
-  Letter,
-  Message,
-  StyledInput,
-  Title,
-  Word,
-  styleLetterAlmost,
-  styleLetterKeyBoardAlmost,
-  styleLetterKeyBoardStrong,
-  styleLetterKeyBoardSuccess,
-  styleLetterKeyBoardUnknown,
-  styleLetterStrong,
-  styleLetterSuccess,
-} from '../../styles';
+import React, { useState, useEffect, useRef } from 'react'
 import palavras from './palavras.json'
-import { KeyboardLetterItem } from '@/components/KeyboardLetter';
-import { LetterClassification } from '@/models';
+import { KeyboardLetterItem } from '@/components/KeyboardLetter'
+import { LetterClassification } from '@/models'
 
 export default function Home() {
-  const [correctWord, setCorrectWord] = useState('');
-  const [words, setWords] = useState<string[]>([]);
-  const [message, setMessage] = useState('');
-  const [inputValue, setInputValue] = useState<string[]>(Array(5).fill(''));
+  const [correctWord, setCorrectWord] = useState('')
+  const [words, setWords] = useState<string[]>([])
+  const [message, setMessage] = useState('')
+  const [inputValue, setInputValue] = useState<string[]>(Array(5).fill(''))
   const inputRefs: React.RefObject<HTMLInputElement>[] = [
     useRef<HTMLInputElement>(null),
     useRef<HTMLInputElement>(null),
     useRef<HTMLInputElement>(null),
     useRef<HTMLInputElement>(null),
     useRef<HTMLInputElement>(null),
-  ];
-  const [focusIndex, setFocusIndex] = useState(-1);
+  ]
+  const [focusIndex, setFocusIndex] = useState(-1)
 
   const handleInputWordSubmit = () => {
-    const text = inputValue.join('');
+    const text = inputValue.join('')
     setMessage('')
     setFocusIndex(0)
 
@@ -65,74 +47,72 @@ export default function Home() {
     const indexWithoutValue = inputValue.findIndex(i => !i)
     setFocusIndex(indexWithoutValue)
     inputRefs[indexWithoutValue].current?.focus()
-  };
+  }
 
   useEffect(() => {
-    const randomIndex = Math.floor(Math.random() * palavras.length);
+    const randomIndex = Math.floor(Math.random() * palavras.length)
     setCorrectWord(palavras[randomIndex])
   }, [])
 
   const handleChange = (index: number, value: string) => {
-    const newInputValue = [...inputValue];
-    newInputValue[index] = value;
-    setInputValue(newInputValue);
+    const newInputValue = [...inputValue]
+    newInputValue[index] = value
+    setInputValue(newInputValue)
 
     if (value && index < inputRefs.length - 1) {
-      inputRefs[index + 1].current?.focus();
-      setFocusIndex(index + 1);
-      return;
+      inputRefs[index + 1].current?.focus()
+      setFocusIndex(index + 1)
+      return
     }
 
-    const indexWithoutValue = newInputValue.findIndex(i => !i);
-    setFocusIndex(indexWithoutValue);
-    inputRefs[indexWithoutValue]?.current?.focus();
-  };
+    const indexWithoutValue = newInputValue.findIndex(i => !i)
+    setFocusIndex(indexWithoutValue)
+    inputRefs[indexWithoutValue]?.current?.focus()
+  }
 
   const handleKeyDown = (index: number, event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Backspace' && index > 0 && !inputValue[index]) {
-      // Se pressionar "Backspace" e o campo atual estiver vazio, move o foco para o campo anterior
-      inputRefs[index - 1].current?.focus();
-      setFocusIndex(index - 1);
+      inputRefs[index - 1].current?.focus()
+      setFocusIndex(index - 1)
     }
     if (event.key === 'Enter') {
-      handleInputWordSubmit();
+      handleInputWordSubmit()
     }
-  };
+  }
 
   const validateLetter = (letter: string, index: number): LetterClassification => {
-    const upperLetter = letter.toUpperCase();
-    const correctLetters = correctWord.toUpperCase().split('');
+    const upperLetter = letter.toUpperCase()
+    const correctLetters = correctWord.toUpperCase().split('')
 
-    if (correctLetters[index] === upperLetter) return LetterClassification.correct;
-    if (correctLetters.includes(upperLetter)) return LetterClassification.almost;
+    if (correctLetters[index] === upperLetter) return LetterClassification.correct
+    if (correctLetters.includes(upperLetter)) return LetterClassification.almost
 
-    return LetterClassification.strong;
-  };
+    return LetterClassification.strong
+  }
 
-  const validateLetterOfWord = (letter: string, index: number): React.CSSProperties => {
-    const letterClassification = validateLetter(letter, index);
-
-    if (letterClassification === LetterClassification.correct) return styleLetterSuccess;
-    if (letterClassification === LetterClassification.almost) return styleLetterAlmost;
-
-    return styleLetterStrong;
-  };
+  const letterClass = (letter: string, index: number): string => {
+    const base = 'w-12 h-12 flex items-center justify-center m-1 text-lg font-bold rounded animate-fade'
+    const classification = validateLetter(letter, index)
+    if (classification === LetterClassification.correct) return `${base} bg-success text-white`
+    if (classification === LetterClassification.almost) return `${base} bg-almost text-white`
+    return `${base} border border-gray-500 text-gray-100`
+  }
 
   const validateLetterOfKeyboard = (letter: string): LetterClassification => {
-    let letterClassification = LetterClassification.unknown;
+    let letterClassification = LetterClassification.unknown
     for (const w of words) {
-      const l = w.split('');
+      const l = w.split('')
       for (let index = 0; index < l.length; index++) {
-        const iterator = l[index];
+        const iterator = l[index]
 
         if (letter === iterator) {
-          letterClassification = validateLetter(letter, index);
+          letterClassification = validateLetter(letter, index)
         }
       }
     }
 
-    return letterClassification;
-  };
+    return letterClassification
+  }
 
   const firstLine = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p']
   const secondLine = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l']
@@ -142,61 +122,70 @@ export default function Home() {
     const focusedIndex = focusIndex
 
     if (focusedIndex !== -1) {
-      handleChange(focusedIndex, letter);
+      handleChange(focusedIndex, letter)
     } else {
-      // Lógica a ser executada se nenhum input estiver com foco
-      console.log("Nenhum input está com foco.");
+      console.log('Nenhum input está com foco.')
     }
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center">
-      <Title>TERMO</Title>
-      <Message>{message}</Message>
-        {words.map(w => (
-          <Word key={w}>{w.split('').map((letter, index) => {
-            const letterStyle = validateLetterOfWord(letter, index)
-            return (<Letter key={`${letter}-${index}`} style={letterStyle}>{letter}</Letter>)
-          })}</Word>
-        ))}
+    <main className="flex flex-col items-center">
+      <h1 className="text-4xl font-bold text-white mt-5">TERMO</h1>
+      <p className="my-3 text-white min-h-[24px] animate-fade">{message}</p>
+      {words.map(w => (
+        <div key={w} className="grid grid-cols-5 gap-2 mb-2">
+          {w.split('').map((letter, index) => (
+            <div key={`${letter}-${index}`} className={letterClass(letter, index)}>
+              {letter}
+            </div>
+          ))}
+        </div>
+      ))}
 
-      <InputContainer>
+      <div className="flex my-5">
         {inputValue.map((value, index) => (
-          <StyledInput
+          <input
             key={index}
             type="text"
             maxLength={1}
             value={value}
             onClick={() => setFocusIndex(index)}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(index, e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(index, e.target.value)}
             ref={inputRefs[index]}
             onKeyDown={(e) => handleKeyDown(index, e)}
+            className="w-12 h-12 m-1 text-center text-lg border border-gray-400 text-gray-900 rounded focus:outline-none"
           />
         ))}
-      </InputContainer>
+      </div>
 
-      <KeyboardContainer>
-        <KeyboardLine>
-          {firstLine.map(k => (<KeyboardLetterItem key={k} onHandleClick={onClickLetterKeyboard} letter={k} validedLetterOfKeyboard={validateLetterOfKeyboard} />))}
-        </KeyboardLine>
-        <KeyboardLine>
-        {secondLine.map(k => (<KeyboardLetterItem key={k} onHandleClick={onClickLetterKeyboard} letter={k} validedLetterOfKeyboard={validateLetterOfKeyboard} />))}
-        </KeyboardLine>
-        <KeyboardLine>
-        {thirdLine.map(k => (<KeyboardLetterItem key={k} onHandleClick={onClickLetterKeyboard} letter={k} validedLetterOfKeyboard={validateLetterOfKeyboard} />))}
-          <InputButton
+      <div className="w-full overflow-x-hidden">
+        <div className="flex items-center justify-center">
+          {firstLine.map(k => (
+            <KeyboardLetterItem key={k} onHandleClick={onClickLetterKeyboard} letter={k} validedLetterOfKeyboard={validateLetterOfKeyboard} />
+          ))}
+        </div>
+        <div className="flex items-center justify-center">
+          {secondLine.map(k => (
+            <KeyboardLetterItem key={k} onHandleClick={onClickLetterKeyboard} letter={k} validedLetterOfKeyboard={validateLetterOfKeyboard} />
+          ))}
+        </div>
+        <div className="flex items-center justify-center">
+          {thirdLine.map(k => (
+            <KeyboardLetterItem key={k} onHandleClick={onClickLetterKeyboard} letter={k} validedLetterOfKeyboard={validateLetterOfKeyboard} />
+          ))}
+          <button
             type="button"
             onClick={handleInputWordSubmit}
             onTouchStart={(e) => {
-              e.preventDefault();
-              handleInputWordSubmit();
+              e.preventDefault()
+              handleInputWordSubmit()
             }}
+            className="w-24 h-12 ml-3 font-bold bg-blue-600 text-white rounded transition-colors hover:bg-blue-700"
           >
             ENTER
-          </InputButton>
-        </KeyboardLine>
-      </KeyboardContainer>
-
+          </button>
+        </div>
+      </div>
     </main>
   )
 }
