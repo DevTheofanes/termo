@@ -1,6 +1,5 @@
 'use client'
 import React from 'react'
-import { tw } from '@/twind'
 import { LetterClassification } from '../models'
 
 export function KeyboardLetterItem({letter, validedLetterOfKeyboard, onHandleClick}: {
@@ -11,10 +10,10 @@ export function KeyboardLetterItem({letter, validedLetterOfKeyboard, onHandleCli
   const keyClass = (ltr: string): string => {
     const base = 'w-12 h-12 m-1 border rounded flex items-center justify-center font-bold text-white transition-colors'
     const classification = validedLetterOfKeyboard(ltr)
-    if (classification === LetterClassification.correct) return tw`${base} bg-success`
-    if (classification === LetterClassification.almost) return tw`${base} bg-almost`
-    if (classification === LetterClassification.strong) return tw`${base} bg-strong opacity-50 cursor-not-allowed`
-    return tw`${base} bg-key`
+    if (classification === LetterClassification.correct) return `${base} bg-success`
+    if (classification === LetterClassification.almost) return `${base} bg-almost`
+    if (classification === LetterClassification.strong) return `${base} bg-strong opacity-50 cursor-not-allowed`
+    return `${base} bg-key`
   }
 
   const handlePress = (e: React.MouseEvent | React.TouchEvent) => {
